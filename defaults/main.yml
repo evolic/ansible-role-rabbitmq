@@ -1,0 +1,21 @@
+---
+rabbitmq_daemon: rabbitmq-server
+rabbitmq_state: started
+rabbitmq_enabled: yes
+rabbitmq_admin_panel_enabled: yes
+
+rabbitmq_admin_user: admin
+rabbitmq_admin_password: admin
+
+rabbitmq_version: "3.7.4"
+
+rabbitmq_rpm: "rabbitmq-server-{{ rabbitmq_version }}-1.el{{ ansible_distribution_major_version }}.noarch.rpm"
+rabbitmq_rpm_url: "https://packagecloud.io/rabbitmq/rabbitmq-server/packages/el/{{ ansible_distribution_major_version }}/{{ rabbitmq_rpm }}/download"
+
+esl_erlang_version: "20.2.2-1"
+
+esl_erlang_rpm: "esl-erlang_{{ esl_erlang_version }}~{{ ansible_distribution | lower }}~{{ ansible_distribution_release }}_amd64.rpm"
+esl_erlang_rpm_url: "http://packages.erlang-solutions.com/site/esl/esl-erlang/FLAVOUR_1_general/{{ esl_erlang_rpm }}"
+
+esl_erlang_deb: "esl-erlang_{{ esl_erlang_version }}~{{ ansible_distribution | lower }}~{{ ansible_distribution_release }}_amd64.deb"
+esl_erlang_deb_url: "http://packages.erlang-solutions.com/site/esl/esl-erlang/FLAVOUR_1_general/{{ esl_erlang_deb }}"

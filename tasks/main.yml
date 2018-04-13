@@ -1,0 +1,40 @@
+---
+# Setup/install tasks.
+- include: setup-RedHat.yml
+  when: ansible_os_family == 'RedHat'
+
+- include: setup-Debian.yml
+  when: ansible_os_family == 'Debian'
+
+- name: Ensure rabbitmq is started and enabled (if configured).
+  service:
+    name: "{{ rabbitmq_daemon }}"
+    state: "{{ rabbitmq_state }}"
+    enabled: "{{ rabbitmq_enabled }}"
+
+- name: Ensure RabbitMQ administration panel is installed (if configured).
+  command: rabbitmq-plugins enable rabbitmq_management
+  when: rabbitmq_admin_panel_enabled
+
+- name: Ensure RabbitMQ administration panel is available via HTTP (if configured).
+  uri:
+    url: http://{{ inventory_hostname }}:15672/
+    return_content: yes
+    status_code: 200
+  register: admin_panel_webpage
+  when: rabbitmq_admin_panel_enabled
+
+- name: Ensure RabbitMQ administration user is created (if configured).
+  command: rabbitmqctl add_user "{{ rabbitmq_admin_user }}" "{{ rabbitmq_admin_password }}"
+  register: admin_user_created
+  when: rabbitmq_admin_panel_enabled
+
+- name: Ensure RabbitMQ administration user is set as administrator (if configured).
+  command: rabbitmqctl set_user_tags "{{ rabbitmq_admin_user }}" administrator
+  register: admin_user_created
+  when: rabbitmq_admin_panel_enabled
+
+- name: Ensure RabbitMQ administration user is created (if configured).
+  command: rabbitmqctl set_permissions -p / "{{ rabbitmq_admin_user }}" ".*" ".*" ".*"
+  register: admin_user_created
+  when: rabbitmq_admin_panel_enabled

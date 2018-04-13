@@ -1,0 +1,31 @@
+---
+- name: Download esl-erlang package.
+  get_url:
+    url: "{{ esl_erlang_deb_url }}"
+    dest: "/tmp/{{ esl_erlang_deb }}"
+
+- name: Ensure esl-erlang package is being to install.
+  command: dpkg -i /tmp/{{ esl_erlang_deb }}
+  # this command ends with failure, so we need to fix it by running `apt-get install -f` in the next step
+  register: dpkg_i_esl_erlang_deb
+  ignore_errors: yes
+
+- name: Ensure esl-erlang package is installed.
+  command: apt-get install -f -y
+
+- name: Add BinTray apt key.
+  apt_key:
+    url: https://dl.bintray.com/rabbitmq/Keys/rabbitmq-release-signing-key.asc
+    state: present
+
+- name: Install apt-transport-https server.
+  apt: pkg=apt-transport-https state=present
+
+- name: Add RabbitMQ server repository.
+  apt_repository:
+    repo: "deb https://dl.bintray.com/rabbitmq/{{ ansible_distribution | lower }} {{ ansible_distribution_release | lower }} main"
+    state: present
+    update_cache: yes
+
+- name: Install RabbitMQ server.
+  apt: pkg=rabbitmq-server state=present
